@@ -30,7 +30,7 @@ html-react-parser\
 millify\
 moment\
 react-chartjs-2\
-react-router-dom\
+react-router-dom
 
 ## Available Scripts
 
