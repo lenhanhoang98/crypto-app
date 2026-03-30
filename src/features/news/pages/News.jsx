@@ -11,13 +11,27 @@ const { Option } = Select
 
 const News = ({ simplified }) => {
   const [newsCategory, setNewsCategory] = useState('Cryptocurrency')
-  const { data: cryptoNews, isFetching } = useGetCryptoNewsQuery({ newsCategory, count: simplified ? 6 : 12 })
+  const { data: cryptoNews, isFetching, error } = useGetCryptoNewsQuery({ newsCategory, count: simplified ? 6 : 12 })
   // Accessing another feature's API
   const { data } = useGetCryptosQuery(100)
 
   const newsList = cryptoNews?.value || cryptoNews?.news || cryptoNews?.data || (Array.isArray(cryptoNews) ? cryptoNews : []);
 
   if (isFetching) return <Loader />
+
+  if (error) {
+    console.error('News API Error:', error);
+    if (!simplified) {
+      return (
+        <div style={{ padding: '20px', background: '#fff2f0', border: '1px solid #ffccc7', borderRadius: '4px' }}>
+          <Title level={4} type="danger">API Error</Title>
+          <Text type="danger">Could not fetch news. This is likely due to missing or incorrect API keys in your hosting environment (Netlify/Vercel).</Text>
+          <pre style={{ marginTop: '10px', fontSize: '12px' }}>{JSON.stringify(error, null, 2)}</pre>
+        </div>
+      );
+    }
+    return null;
+  }
 
   if (!newsList?.length && simplified) return null;
 
