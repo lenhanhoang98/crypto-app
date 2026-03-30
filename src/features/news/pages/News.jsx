@@ -15,9 +15,11 @@ const News = ({ simplified }) => {
   // Accessing another feature's API
   const { data } = useGetCryptosQuery(100)
 
-  const newsList = cryptoNews?.value || cryptoNews?.news || cryptoNews?.data || (Array.isArray(cryptoNews) ? cryptoNews : null);
+  const newsList = cryptoNews?.value || cryptoNews?.news || cryptoNews?.data || (Array.isArray(cryptoNews) ? cryptoNews : []);
 
-  if (isFetching || !newsList) return <Loader />
+  if (isFetching) return <Loader />
+
+  if (!newsList?.length && simplified) return null;
 
   return (
     <Row gutter={[24, 24]}>
@@ -39,6 +41,7 @@ const News = ({ simplified }) => {
               {data?.data?.coins.map((coin)=><Option key={coin.uuid || coin.name} value={coin.name}>{coin.name}</Option>)}
             </Select>
           </div>
+          {!newsList?.length && <Text>No news found for this category.</Text>}
         </Col>
       )}
       {newsList.map((news, i) => (
