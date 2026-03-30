@@ -2,11 +2,13 @@ import React from 'react'
 import { useState, useEffect } from 'react'
 import millify from 'millify'
 import { Link } from 'react-router-dom'
-import { Card, Row, Col, Input } from 'antd'
+import { Card, Row, Col, Input, Typography } from 'antd'
 
-import { useGetCryptosQuery } from '../services/cryptoApi'
-import Loader from './Loader'
+import { useGetCryptosQuery } from '../api/cryptoApi'
+import { formatPrice } from '../../../utils/format'
+import Loader from '../../../components/ui/Loader'
 
+const { Title } = Typography
 
 const Cryptocurrencies = ({ simplified }) => {
   const count = simplified ? 10 : 100
@@ -15,23 +17,24 @@ const Cryptocurrencies = ({ simplified }) => {
   const [searchTerm, setSearchTerm] = useState('')
 
   useEffect(() => {
-    setCryptos(cryptosList?.data?.coins)
-
-    const filteredData = cryptosList?.data?.coins.filter((item) => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
-
+    const filteredData = cryptosList?.data?.coins?.filter((item) => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
     setCryptos(filteredData)
   }, [cryptosList, searchTerm])
+
   if (isFetching) return <Loader />
 
   return (
     <>
       {!simplified && (
-        <div className='search-crypto'>
-          <Input
-            placeholder='Search Cryptocurrency'
-            onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
-          />
-        </div>
+        <>
+          <Title level={2} style={{ margin: '20px 0' }}>Cryptocurrencies</Title>
+          <div className='search-crypto'>
+            <Input
+              placeholder='Search Cryptocurrency'
+              onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
+            />
+          </div>
+        </>
       )}
       <Row gutter={[32, 32]} className='crypto-card-container'>
         {cryptos?.map((currency) => (
@@ -45,10 +48,9 @@ const Cryptocurrencies = ({ simplified }) => {
             <Link key={currency.uuid} to={`/crypto/${currency.uuid}`}>
               <Card
                 title={`${currency.rank}. ${currency.name}`}
-                extra={<img className='crypto-image' src={currency.iconUrl} />}
                 hoverable
               >
-                <p>Price: {millify(currency.price)}</p>
+                <p>Price: {formatPrice(currency.price)}</p>
                 <p>Market Cap: {millify(currency.marketCap)}</p>
                 <p>Daily change: {millify(currency.change)}%</p>
               </Card>
